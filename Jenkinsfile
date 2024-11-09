@@ -48,18 +48,7 @@ pipeline {
         stage('Security Scan') {
             steps {
                 script {
-                    sh "source ${VIRTUAL_ENV}/bin/activate && bandit -r ."
-                }
-            }
-        }
-
-        // Deploy Stage: Placeholder for your deployment logic
-        stage('Deploy') {
-            steps {
-                script {
-                    echo "Deploying application..."
-                    // Add your deployment logic here
-                    // For example, you could use SCP to deploy to a server, Docker to build an image, etc.
+                    sh "source ${VIRTUAL_ENV}/bin/activate && bandit -r . --exclude venv"
                 }
             }
         }
