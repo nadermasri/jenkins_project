@@ -60,10 +60,11 @@ pipeline {
                 script {
                     echo "Deploying application to ${DEPLOY_DIR}"
 
-                    // Copy files to the local server deployment directory
+                    // Ensure the directory exists
                     sh """
-                        cp -r * ${DEPLOY_DIR}/
-                        cd ${DEPLOY_DIR}
+                        mkdir -p "${DEPLOY_DIR}"
+                        cp -r * "${DEPLOY_DIR}/"
+                        cd "${DEPLOY_DIR}"
                         source ${VIRTUAL_ENV}/bin/activate
                         pip install -r requirements.txt
                     """
