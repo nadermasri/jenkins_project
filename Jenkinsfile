@@ -4,6 +4,7 @@ pipeline {
         VIRTUAL_ENV = 'venv'
     }
     stages {
+        // Setup Stage: Creates a virtual environment and installs dependencies
         stage('Setup') {
             steps {
                 script {
@@ -14,6 +15,8 @@ pipeline {
                 }
             }
         }
+
+        // Lint Stage: Runs flake8 to check code style
         stage('Lint') {
             steps {
                 script {
@@ -21,6 +24,8 @@ pipeline {
                 }
             }
         }
+
+        // Test Stage: Runs the unit tests with pytest
         stage('Test') {
             steps {
                 script {
@@ -28,14 +33,39 @@ pipeline {
                 }
             }
         }
+
+        // Coverage Stage: Runs coverage analysis and generates a report
+        stage('Coverage') {
+            steps {
+                script {
+                    sh "source ${VIRTUAL_ENV}/bin/activate && coverage run -m pytest"
+                    sh "source ${VIRTUAL_ENV}/bin/activate && coverage report"
+                }
+            }
+        }
+
+        // Security Scan Stage: Runs Bandit for security scanning
+        stage('Security Scan') {
+            steps {
+                script {
+                    sh "source ${VIRTUAL_ENV}/bin/activate && bandit -r ."
+                }
+            }
+        }
+
+        // Deploy Stage: Placeholder for your deployment logic
         stage('Deploy') {
             steps {
                 script {
                     echo "Deploying application..."
+                    // Add your deployment logic here
+                    // For example, you could use SCP to deploy to a server, Docker to build an image, etc.
                 }
             }
         }
     }
+
+    // Clean up workspace after pipeline completion
     post {
         always {
             cleanWs()
