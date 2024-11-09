@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        VIRTUAL_ENV = 'venv'           // Virtual environment name
-        DEPLOY_PATH = '/path/to/deployment' // Path to where the app will be deployed locally
+        VIRTUAL_ENV = 'venv'
+        DEPLOY_DIR = '/Users/naderalmasri/Desktop/AUB/Fall 2024-2025/EECE435L/jenkins_project'
     }
     stages {
         // Setup Stage: Creates a virtual environment and installs dependencies
@@ -49,41 +49,33 @@ pipeline {
         stage('Security Scan') {
             steps {
                 script {
-                    sh "source ${VIRTUAL_ENV}/bin/activate && bandit -r app" // or `src` if applicable
+                    sh "source ${VIRTUAL_ENV}/bin/activate && bandit -r ${DEPLOY_DIR}"
                 }
             }
         }
 
-        // Deployment Stage: Deploy the application to a local directory
+        // Deployment Stage: Deploys the app to the local directory
         stage('Deploy') {
             steps {
                 script {
-                    // If deploying locally (for local testing or to a local server)
-                    echo "Deploying to local server..."
-                    
-                    // Step 1: Copy files to local deployment directory
-                    sh "cp -r . ${DEPLOY_PATH}" // This will copy the entire workspace to the local server directory
+                    echo "Deploying application to ${DEPLOY_DIR}"
 
-                    // Step 2: Navigate to the deployment directory and install dependencies
+                    // Copy files to the local server deployment directory
                     sh """
-                    cd ${DEPLOY_PATH}
-                    source ${VIRTUAL_ENV}/bin/activate
-                    pip install -r requirements.txt  // Install dependencies in the local server directory
+                        cp -r * ${DEPLOY_DIR}/
+                        cd ${DEPLOY_DIR}
+                        source ${VIRTUAL_ENV}/bin/activate
+                        pip install -r requirements.txt
                     """
-
-                    // Step 3: Restart the application (this is just an example, adjust as needed)
-                    // For example, if you're running the app via systemd or other service manager, you can restart it here.
-                    // You can also directly start the application (e.g., Flask, Django, etc.) from this script.
-                    echo "Starting the application..."
-                    sh "source ${VIRTUAL_ENV}/bin/activate && python app.py"  // Adjust if using other entry point (e.g., Flask, Django, etc.)
                 }
             }
         }
     }
 
+    // Clean up workspace after pipeline completion
     post {
         always {
-            cleanWs()  // Clean up workspace after pipeline completion
+            cleanWs()
         }
     }
 }
