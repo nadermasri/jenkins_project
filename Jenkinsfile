@@ -45,13 +45,15 @@ pipeline {
         }
 
         // Security Scan Stage: Runs Bandit for security scanning
+        // Security Scan Stage: Runs Bandit for security scanning
         stage('Security Scan') {
             steps {
                 script {
-                    sh "source ${VIRTUAL_ENV}/bin/activate && bandit -r . --exclude venv"
+                    sh "source ${VIRTUAL_ENV}/bin/activate && bandit -r . --exclude ${VIRTUAL_ENV}"
                 }
             }
         }
+
     }
 
     // Clean up workspace after pipeline completion
